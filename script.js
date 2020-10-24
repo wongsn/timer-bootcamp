@@ -1,1 +1,1 @@
-// Please implement Timer logic here
+// Please implement exercise logic here
