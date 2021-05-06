@@ -1,3 +1,1 @@
-# Rocket Academy Coding Bootcamp
-
-## Timer
+# Rocket Academy Coding Bootcamp: Timer
