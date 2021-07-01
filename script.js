@@ -1,7 +1,7 @@
 // Please implement exercise logic here
-/*####################
+/* ####################
 ## HELPER FUNCTIONS ##
-####################*/
+#################### */
 const makeDeck = (cardAmount) => {
   // create the empty deck at the beginning
   const newDeck = [];
@@ -17,24 +17,24 @@ const makeDeck = (cardAmount) => {
 
     // set suit symbol to match current suit
     if (currentSuit === 'hearts') {
-        currentSymbol = '♥️';
+      currentSymbol = '♥️';
     } else if (currentSuit === 'spades') {
-        currentSymbol = '♠️';
+      currentSymbol = '♠️';
     } else if (currentSuit === 'clubs') {
-        currentSymbol = '♣️';
+      currentSymbol = '♣️';
     } else {
-        currentSymbol = '♦️';
+      currentSymbol = '♦️';
     }
 
     // set the color of the card (used later to determine the css class which in turn determines the color)
     // does not directly set the color of the card
     let cardColor;
-    if (currentSymbol === '♥️' || currentSymbol === '♦️' ) {
-        cardColor = 'red';
+    if (currentSymbol === '♥️' || currentSymbol === '♦️') {
+      cardColor = 'red';
     } else {
-        cardColor = 'black';
+      cardColor = 'black';
     }
-    
+
     // loop to create all cards in this suit
     // rank 1-13
     for (let rankCounter = 1; rankCounter <= 13; rankCounter += 1) {
@@ -93,87 +93,85 @@ const shuffleCards = (cards) => {
   return cards;
 };
 
-/*###########################
+/* ###########################
 ## PLAYER ACTION CALLBACKS ##
-###########################*/
+########################### */
 const squareClick = (messageBoard, cardElement, column, row) => {
-    console.log(cardElement);
-    console.log('FIRST CARD DOM ELEMENT', firstCard);
-    console.log('BOARD CLICKED CARD', board[column][row]);
-    const clickedCard = board[column][row]; 
-    if (canClick === false) {
-      return;
-    }
+  console.log(cardElement);
+  console.log('FIRST CARD DOM ELEMENT', firstCard);
+  console.log('BOARD CLICKED CARD', board[column][row]);
+  const clickedCard = board[column][row];
+  if (canClick === false) {
+    return;
+  }
 
-    // the user already clicked on this square
-    if( cardElement.innerText !== '' ){
-        return;
-    }
+  // the user already clicked on this square
+  if (cardElement.innerText !== '') {
+    return;
+  }
 
-    // first turn
-    if (firstCard === null) {
-      console.log('first turn');
-      firstCard = clickedCard;
-      // turn this card over
-      cardElement.classList.add('card');
-      cardElement.innerHTML = `${firstCard.name}<br>${firstCard.suitSymbol}`;
-      messageBoard.innerText = 'click on another square';
-      // hold onto this for later when it may not match
-      firstCardElement = cardElement;
+  // first turn
+  if (firstCard === null) {
+    console.log('first turn');
+    firstCard = clickedCard;
+    // turn this card over
+    cardElement.classList.add('card');
+    cardElement.innerHTML = `${firstCard.name}<br>${firstCard.suitSymbol}`;
+    messageBoard.innerText = 'click on another square';
+    // hold onto this for later when it may not match
+    firstCardElement = cardElement;
 
     // second turn
+  } else {
+    console.log('second turn');
+    // condition is met, first card matches second card
+    if (
+      clickedCard.name === firstCard.name
+        && clickedCard.suit === firstCard.suit
+    ) {
+      console.log('match');
+      // display match message
+      messageBoard.innerText = 'it\'s a match!';
+      // apply css class and card's name and suit to cardElement so that it looks like the card has been turned over
+      cardElement.classList.add('card');
+      cardElement.innerHTML = `${clickedCard.name}<br>${clickedCard.suitSymbol}`;
     } else {
-      console.log('second turn');
-      // condition is met, first card matches second card
-      if (
-        clickedCard.name === firstCard.name &&
-        clickedCard.suit === firstCard.suit
-      ) {
-        console.log('match');
-        // display match message
-        messageBoard.innerText = 'it\'s a match!';
-        // apply css class and card's name and suit to cardElement so that it looks like the card has been turned over
-        cardElement.classList.add('card');
-        cardElement.innerHTML = `${clickedCard.name}<br>${clickedCard.suitSymbol}`;
+      console.log('NOT a match');
+      messageBoard.innerText = 'no match, try again';
+      cardElement.innerHTML = `${clickedCard.name}<br>${clickedCard.suitSymbol}`;
+      cardElement.classList.add('card');
 
-      } else {
-        console.log('NOT a match');
-        messageBoard.innerText = 'no match, try again';
-        cardElement.innerHTML = `${clickedCard.name}<br>${clickedCard.suitSymbol}`;
-        cardElement.classList.add('card');
-
-        // turn both cards back over after 3 seconds
-        // removing innerText and changing the css class back to square, returns it to it's original state
-        setTimeout(() => {
-          firstCardElement.innerText = '';
-          firstCardElement.className = 'square';
-          cardElement.innerText = '';
-          cardElement.className = 'square';
-        }, 3000);
-        
-      }
-
-      // reset the first card
-      firstCard = null;
+      // turn both cards back over after 3 seconds
+      // removing innerText and changing the css class back to square, returns it to it's original state
+      setTimeout(() => {
+        firstCardElement.innerText = '';
+        firstCardElement.className = 'square';
+        cardElement.innerText = '';
+        cardElement.className = 'square';
+      }, 3000);
     }
+
+    // reset the first card
+    firstCard = null;
+  }
 };
 
-/*#######################
+/* #######################
 ## GLOBAL VARIABLES #####
-#######################*/
+####################### */
 // boardSize has to be an even number
 const boardSize = 4;
 const board = [];
 let firstCard = null;
 let firstCardElement;
 let deck;
-// this is used in the timer component, where canClick = true when the user click on the start button, 
+// this is used in the timer component, where canClick = true when the user click on the start button,
 // starting the game
 let canClick = false;
 
-/*########################
+/* ########################
 ## GAME INITIALISATION ###
-########################*/
+######################## */
 // create all the board elements that will go on the screen
 // return the built board
 const buildBoardElements = (messageBoard, board) => {
@@ -217,100 +215,100 @@ const buildBoardElements = (messageBoard, board) => {
 };
 
 const buildTimerElements = (messageBoard) => {
-    let ref;
-    let minutes = 0;
-    let seconds = 10;
-    let canStart = true;
+  let ref;
+  let minutes = 0;
+  let seconds = 10;
+  let canStart = true;
 
-    const startTimer = () => {
-        const delayInMilliseconds = 1000;
-        if (canStart === false) {
-          return;
-        }
-        messageBoard.innerText = 'click on a square';
-        // enabling the squares to be clicked here
-        canClick = true;
-
-        ref = setInterval(() => {
-            display.innerHTML = `${minutes} minutes ${seconds} seconds`;
-            if (seconds === 0) {
-                minutes -= 1;
-                seconds = 60;
-            }
-
-            if (minutes < 0) {
-                clearInterval(ref);
-                canStart = true;
-                canClick = false;
-                messageBoard.innerHTML = 'Times up! click the reset button to restart';
-            }
-
-            seconds -= 1;
-            }, delayInMilliseconds);
-
-        // this is to prevent user from clicking on the start button multiple times
-        canStart = false;  
+  const startTimer = () => {
+    const delayInMilliseconds = 1000;
+    if (canStart === false) {
+      return;
     }
+    messageBoard.innerText = 'click on a square';
+    // enabling the squares to be clicked here
+    canClick = true;
 
-    const stopTimer = () => {
+    ref = setInterval(() => {
+      display.innerHTML = `${minutes} minutes ${seconds} seconds`;
+      if (seconds === 0) {
+        minutes -= 1;
+        seconds = 60;
+      }
+
+      if (minutes < 0) {
         clearInterval(ref);
         canStart = true;
-        // prevents user from clicking on the squares when timer is paused
         canClick = false;
-        messageBoard.innerText = 'click start to resume game';
-    }
+        messageBoard.innerHTML = 'Times up! click the reset button to restart';
+      }
 
-    const resetTimer = () => {
-        minutes = 0;
-        seconds = 10;
-        canStart = true;
-        canClick = true;
-        display.innerHTML = `${minutes} minutes ${seconds} seconds`;
-        messageBoard.innerHTML = 'click start to begin';
-    }
+      seconds -= 1;
+    }, delayInMilliseconds);
 
-    // build the container where all the timer elements will go in
-    const timerContainer = document.createElement('div');
-    timerContainer.classList.add('timer-container');
+    // this is to prevent user from clicking on the start button multiple times
+    canStart = false;
+  };
 
-    // the timer's display and the container which it will go in 
-    const timerTop = document.createElement('div');
-    timerContainer.appendChild(timerTop);
-    const display = document.createElement('div');
-    display.classList.add('timer-display');
+  const stopTimer = () => {
+    clearInterval(ref);
+    canStart = true;
+    // prevents user from clicking on the squares when timer is paused
+    canClick = false;
+    messageBoard.innerText = 'click start to resume game';
+  };
+
+  const resetTimer = () => {
+    minutes = 0;
+    seconds = 10;
+    canStart = true;
+    canClick = true;
     display.innerHTML = `${minutes} minutes ${seconds} seconds`;
-    timerTop.appendChild(display);
+    messageBoard.innerHTML = 'click start to begin';
+  };
 
-    // the timer's buttons and the container which it will go in
-    const timerBottom = document.createElement('div');
-    timerContainer.appendChild(timerBottom);
-    const startButton = document.createElement('button');
-    startButton.classList.add('btn');
-    startButton.innerText = 'START';
-    // start button functionality to be initialised here
-    startButton.addEventListener('click', startTimer);
-    timerBottom.appendChild(startButton);
-    const stopButton = document.createElement('button');
-    stopButton.classList.add('btn');
-    stopButton.innerText = 'STOP';
-    // stop button functionality to be initialised here
-    stopButton.addEventListener('click', stopTimer);
-    timerBottom.appendChild(stopButton);
-    const resetButton = document.createElement('button');
-    resetButton.classList.add('btn');
-    resetButton.innerText = 'RESET';
-    // reset button functionality to be initialised here
-    resetButton.addEventListener('click', resetTimer);
-    timerBottom.appendChild(resetButton);
+  // build the container where all the timer elements will go in
+  const timerContainer = document.createElement('div');
+  timerContainer.classList.add('timer-container');
 
-    return timerContainer;
-}
+  // the timer's display and the container which it will go in
+  const timerTop = document.createElement('div');
+  timerContainer.appendChild(timerTop);
+  const display = document.createElement('div');
+  display.classList.add('timer-display');
+  display.innerHTML = `${minutes} minutes ${seconds} seconds`;
+  timerTop.appendChild(display);
+
+  // the timer's buttons and the container which it will go in
+  const timerBottom = document.createElement('div');
+  timerContainer.appendChild(timerBottom);
+  const startButton = document.createElement('button');
+  startButton.classList.add('btn');
+  startButton.innerText = 'START';
+  // start button functionality to be initialised here
+  startButton.addEventListener('click', startTimer);
+  timerBottom.appendChild(startButton);
+  const stopButton = document.createElement('button');
+  stopButton.classList.add('btn');
+  stopButton.innerText = 'STOP';
+  // stop button functionality to be initialised here
+  stopButton.addEventListener('click', stopTimer);
+  timerBottom.appendChild(stopButton);
+  const resetButton = document.createElement('button');
+  resetButton.classList.add('btn');
+  resetButton.innerText = 'RESET';
+  // reset button functionality to be initialised here
+  resetButton.addEventListener('click', resetTimer);
+  timerBottom.appendChild(resetButton);
+
+  return timerContainer;
+};
 
 const initGame = () => {
   // create this special deck by getting the doubled cards and
   // making a smaller array that is ( boardSize squared ) number of cards
-  let doubleDeck = makeDeck();
-  let deckSubset = doubleDeck.slice(0, boardSize * boardSize);
+  const doubleDeck = makeDeck();
+  const deckSubset = doubleDeck.slice(0, boardSize * boardSize);
   deck = shuffleCards(deckSubset);
 
   // deal the cards out to the board data structure
@@ -336,6 +334,6 @@ const initGame = () => {
   document.body.appendChild(timerEl);
 };
 
-//#########################################
+// #########################################
 // initialise game by calling initGame function
 initGame();
