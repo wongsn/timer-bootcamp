@@ -1,3 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron&display=swap");
+
 body {
   background-color: pink;
+  text-align: center;
+}
+
+.button {
+}
+
+.time {
+  font-family: "Orbitron", sans-serif;
+  font-size: large;
+  text-align: center;
+  display: inline-block;
 }

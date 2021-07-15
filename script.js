@@ -22,19 +22,16 @@ elapsedTime.classList.add('watch');
 const elapsedHour = document.createElement('div');
 elapsedHour.classList.add('time');
 elapsedHour.querySelector('hour');
-elapsedHourcontentEditable = true;
-elapsedHour.innerHTML = '00';
+elapsedHour.innerHTML = '00 : ';
 
 const elapsedMinute = document.createElement('div');
 elapsedMinute.classList.add('time');
 elapsedMinute.id = 'minute';
-elapsedMinute.contentEditable = true;
-elapsedMinute.innerHTML = '00';
+elapsedMinute.innerHTML = '00 : ';
 
 const elapsedSecond = document.createElement('div');
 elapsedSecond.classList.add('time');
 elapsedSecond.id = 'second';
-elapsedSecond.contentEditable = true;
 elapsedSecond.innerHTML = '00';
 
 elapsedTime.appendChild(elapsedHour);
@@ -61,8 +58,8 @@ dataField.classList.add('data');
 
 // populate the field
 
-watchContainer.appendChild(modeLapButton);
 watchContainer.appendChild(elapsedTime);
+watchContainer.appendChild(modeLapButton);
 watchContainer.appendChild(startPauseButton);
 watchContainer.appendChild(stopResetButton);
 watchContainer.appendChild(dataField);
@@ -76,11 +73,10 @@ const input = []; // [hour,minute,second]
 const startPauseState = 'Start';
 const stopResetState = 'Stop';
 
-let h = document.querySelector('hour');
-
-let m = document.querySelector('minute');
-
-let s = document.querySelector('second');
+let h;
+let m;
+let s;
+let r;
 
 const setTime = (hour, min, sec) => {
   h = hour;
@@ -88,31 +84,44 @@ const setTime = (hour, min, sec) => {
   s = sec;
 };
 
-setTime(0, 0, 3);
+setTime(0, 0, 10);
+// assuming input (testing)
 
-const generateCountdownTimer = () => {
-  // eslint-disable-next-line no-loop-func
-  r = setInterval(() => {
-    elapsedHour.innerHTML = `${Math.floor(h / 10) % 2}${m % 10}`;
-    elapsedMinute.innerHTML = `${Math.floor(m / 10) % 6}${m % 10}`;
-    elapsedSecond.innerHTML = `${Math.floor(s / 10) % 6}${s % 10}`;
-    if (h <= 0 && m <= 0 && s <= 0) {
-      clearInterval(r);
-    } else if (h > 0 && m <= 0 && s <= 0) {
+const startTimer = () => {
+  // if wanna pause
+  if (elapsedHour.innerHTML !== '00 : ' || elapsedMinute.innerHTML !== '00 : ' || elapsedSecond.innerHTML !== '00') {
+    console.log('pause');
+    clearInterval(r);
+    dataField.innerHTML = `${Math.floor(h / 10) % 2}${m % 10} :${Math.floor(h / 10) % 2}${m % 10} :${Math.floor(h / 10) % 2}${m % 10}`;
+  } else {
+    // eslint-disable-next-line no-loop-func
+    console.log('start/resume');
+    console.log(h, m, s);
+    r = setInterval(() => {
+      elapsedHour.innerHTML = `${Math.floor(h / 10) % 2}${m % 10} : `;
+      elapsedMinute.innerHTML = `${Math.floor(h / 10) % 2}${m % 10} : `;
+      elapsedSecond.innerHTML = `${Math.floor(h / 10) % 2}${m % 10}`;
+      if (h <= 0 && m <= 0 && s <= 0) {
+        clearInterval(r);
+      } else if (h > 0 && m <= 0 && s <= 0) {
       // when minute runs out, pull from hour
-      h -= 1;
-      m = 60;
-      s = 60;
-    } else if (m > 0 && s <= 0) {
+        h -= 1;
+        m = 60;
+        s = 60;
+      } else if (m > 0 && s <= 0) {
       // when second runs out, pull from minute
-      m -= 1;
-      s = 60;
-    }
-    s -= 1;
-  },
-  1000);
+        m -= 1;
+        s = 60;
+      }
+      s -= 1;
+    },
+    1000);
+  }
 };
-generateCountdownTimer();
+
+const stopTimer = () => {
+  clearInterval(r);
+};
 
 // const centralListener = () =>{
 //   if(mode == 1){
@@ -125,4 +134,5 @@ generateCountdownTimer();
 
 // increase adds 1 takes a div class
 
-// modeLapButton.addEventListener('click', centralListener);
+stopResetButton.addEventListener('click', stopTimer);
+startPauseButton.addEventListener('click', startTimer);
