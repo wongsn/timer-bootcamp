@@ -5,12 +5,23 @@ body {
   text-align: center;
 }
 
-.button {
-}
-
 .time {
   font-family: "Orbitron", sans-serif;
   font-size: large;
   text-align: center;
-  display: inline-block;
+  display: inline;
+}
+
+.input {
+  max-width: 30px;
+  height: 20px;
+  display: inline;
+}
+
+#input {
+  text-align: center;
+}
+
+.watchContainer {
+  margin: 20px 0;
 }

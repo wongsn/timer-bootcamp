@@ -6,10 +6,8 @@
 // global states
 
 const start = false;
-const stop = true;
 const mode = false;
 const pause = true;
-const reset = false;
 
 // initialise the objects
 
@@ -38,18 +36,51 @@ elapsedTime.appendChild(elapsedHour);
 elapsedTime.appendChild(elapsedMinute);
 elapsedTime.appendChild(elapsedSecond);
 
+const inputTimeFields = document.createElement('div');
+inputTimeFields.classList.add('input');
+
+const inputHour = document.createElement('input');
+inputHour.classList.add('input');
+inputHour.id = 'inputhour';
+inputHour.setAttribute('type', 'number');
+inputHour.setAttribute('maxlength', '2');
+inputHour.setAttribute('max', '23');
+inputHour.setAttribute('min', '0');
+
+const inputMinute = document.createElement('input');
+inputMinute.classList.add('input');
+inputMinute.id = 'inputminute';
+inputMinute.setAttribute('type', 'number');
+inputMinute.setAttribute('maxlength', '2');
+inputMinute.setAttribute('max', '59');
+inputMinute.setAttribute('min', '0');
+
+const inputSecond = document.createElement('input');
+inputSecond.classList.add('input');
+inputSecond.id = 'inputsecond';
+inputSecond.setAttribute('type', 'number');
+inputSecond.setAttribute('maxlength', '2');
+inputSecond.setAttribute('max', '59');
+inputSecond.setAttribute('min', '1');
+
+inputTimeFields.appendChild(inputHour);
+inputTimeFields.appendChild(inputMinute);
+inputTimeFields.appendChild(inputSecond);
+
 // when mode button pressed, enter edit mode
 const modeLapButton = document.createElement('button');
 modeLapButton.classList.add('button');
-modeLapButton.innerText = 'mode';
+modeLapButton.innerText = 'Set Time';
 
 const startPauseButton = document.createElement('button');
 startPauseButton.classList.add('button');
 startPauseButton.innerText = 'Start';
+startPauseButton.disabled = true;
 
 const stopResetButton = document.createElement('button');
 stopResetButton.classList.add('button');
 stopResetButton.innerText = 'Stop';
+stopResetButton.disabled = true;
 
 const dataField = document.createElement('div');
 dataField.classList.add('data');
@@ -59,6 +90,7 @@ dataField.classList.add('data');
 // populate the field
 
 watchContainer.appendChild(elapsedTime);
+watchContainer.appendChild(inputTimeFields);
 watchContainer.appendChild(modeLapButton);
 watchContainer.appendChild(startPauseButton);
 watchContainer.appendChild(stopResetButton);
@@ -68,41 +100,59 @@ document.body.appendChild(watchContainer);
 
 // declare global variables
 
-const input = []; // [hour,minute,second]
-
-const startPauseState = 'Start';
-const stopResetState = 'Stop';
-
-let h;
-let m;
-let s;
+let h = 0;
+let m = 0;
+let s = 0;
 let r;
 
-const setTime = (hour, min, sec) => {
-  h = hour;
-  m = min;
-  s = sec;
+const setTime = () => {
+  if (inputHour.value == '' && inputMinute.value == '' && inputSecond.value == '') {
+    dataField.innerHTML = 'Input a value';
+  } else { startPauseButton.disabled = false;
+    stopResetButton.disabled = false;
+    modeLapButton.disabled = true;
+    inputHour.disabled = true;
+    inputMinute.disabled = true;
+    inputSecond.disabled = true;
+
+    h = document.getElementById('inputhour').value;
+    m = document.getElementById('inputminute').value;
+    s = document.getElementById('inputsecond').value;
+
+    console.log(h, m, s);
+
+    elapsedHour.innerHTML = `${Math.floor(h / 10) % 10}${h % 10} : `;
+    elapsedMinute.innerHTML = `${Math.floor(m / 10) % 6}${m % 10} : `;
+    elapsedSecond.innerHTML = `${Math.floor(s / 10) % 6}${s % 10}`;
+  }
 };
 
-setTime(0, 0, 10);
 // assuming input (testing)
 
+let hasStarted = false;
+
 const startTimer = () => {
-  // if wanna pause
-  if (elapsedHour.innerHTML !== '00 : ' || elapsedMinute.innerHTML !== '00 : ' || elapsedSecond.innerHTML !== '00') {
+  // if input time != current time, implies pause
+  if (hasStarted) {
     console.log('pause');
     clearInterval(r);
-    dataField.innerHTML = `${Math.floor(h / 10) % 2}${m % 10} :${Math.floor(h / 10) % 2}${m % 10} :${Math.floor(h / 10) % 2}${m % 10}`;
+    dataField.innerHTML += `>> ${Math.floor(h / 10) % 10}${h % 10} : ${Math.floor(m / 10) % 6}${m % 10} : ${Math.floor(s / 10) % 6}${s % 10}<br>`;
+    hasStarted = false;
+    startPauseButton.innerText = 'Resume';
   } else {
+    startPauseButton.innerText = 'Pause';
+    hasStarted = true;
     // eslint-disable-next-line no-loop-func
     console.log('start/resume');
-    console.log(h, m, s);
     r = setInterval(() => {
-      elapsedHour.innerHTML = `${Math.floor(h / 10) % 2}${m % 10} : `;
-      elapsedMinute.innerHTML = `${Math.floor(h / 10) % 2}${m % 10} : `;
-      elapsedSecond.innerHTML = `${Math.floor(h / 10) % 2}${m % 10}`;
+      console.log(s);
+
+      elapsedHour.innerHTML = `${Math.floor(h / 10) % 10}${h % 10} : `;
+      elapsedMinute.innerHTML = `${Math.floor(m / 10) % 6}${m % 10} : `;
+      elapsedSecond.innerHTML = `${Math.floor((s / 10) % 6)}${s % 10}`;
       if (h <= 0 && m <= 0 && s <= 0) {
         clearInterval(r);
+        // endtimer;
       } else if (h > 0 && m <= 0 && s <= 0) {
       // when minute runs out, pull from hour
         h -= 1;
@@ -112,27 +162,45 @@ const startTimer = () => {
       // when second runs out, pull from minute
         m -= 1;
         s = 60;
-      }
-      s -= 1;
+      }s -= 1;
+
+      console.log(s);
     },
     1000);
   }
 };
 
 const stopTimer = () => {
+  if (hasStarted) {
+    // return timer clock to start state
+    elapsedHour.innerHTML = '00 : ';
+    elapsedMinute.innerHTML = '00 : ';
+    elapsedSecond.innerHTML = '00';
+    // set timer back to input timing
+    h = 0;
+    m = 0;
+    s = 0;
+    stopResetButton.innerText = 'Stop';
+    startPauseButton.innerText = 'Start';
+    hasStarted = false;
+    startPauseButton.disabled = true;
+    stopResetButton.disabled = true;
+    modeLapButton.disabled = false;
+    inputHour.disabled = false;
+    inputMinute.disabled = false;
+    inputSecond.disabled = false;
+
+    dataField.innerText = '';
+  }
+  startPauseButton.disabled = true;
+  stopResetButton.innerText = 'Reset';
+  hasStarted = true;
+  console.log('stop');
   clearInterval(r);
 };
 
-// const centralListener = () =>{
-//   if(mode == 1){
-//     startPauseButton.addEventListener('click',increase);
-//     stopResetButton.addEventListener('click',decrease);
-//   } else if(mode == 2) {
-
-//   }
-// }
-
 // increase adds 1 takes a div class
 
+modeLapButton.addEventListener('click', setTime);
 stopResetButton.addEventListener('click', stopTimer);
 startPauseButton.addEventListener('click', startTimer);
