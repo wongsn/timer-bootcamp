@@ -107,7 +107,7 @@ let r;
 
 const setTime = () => {
   if (inputHour.value == '' && inputMinute.value == '' && inputSecond.value == '') {
-    dataField.innerHTML = 'Input a value';
+    dataField.innerHTML = 'Input a value<br>';
   } else { startPauseButton.disabled = false;
     stopResetButton.disabled = false;
     modeLapButton.disabled = true;
@@ -162,7 +162,9 @@ const startTimer = () => {
       // when second runs out, pull from minute
         m -= 1;
         s = 60;
-      }s -= 1;
+      } else {
+        s -= 1;
+      }
 
       console.log(s);
     },
@@ -172,7 +174,13 @@ const startTimer = () => {
 
 const stopTimer = () => {
   if (hasStarted) {
-    // return timer clock to start state
+    startPauseButton.disabled = true;
+    stopResetButton.innerText = 'Reset';
+    hasStarted = false;
+    console.log('stop');
+    clearInterval(r);
+  } else {
+  // return timer clock to start state
     elapsedHour.innerHTML = '00 : ';
     elapsedMinute.innerHTML = '00 : ';
     elapsedSecond.innerHTML = '00';
@@ -192,11 +200,6 @@ const stopTimer = () => {
 
     dataField.innerText = '';
   }
-  startPauseButton.disabled = true;
-  stopResetButton.innerText = 'Reset';
-  hasStarted = true;
-  console.log('stop');
-  clearInterval(r);
 };
 
 // increase adds 1 takes a div class
